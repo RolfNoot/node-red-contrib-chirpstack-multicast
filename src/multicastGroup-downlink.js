@@ -7,18 +7,28 @@ module.exports = function(RED) {
   function MulticastGroupDownlink(config) {
     RED.nodes.createNode(this, config);
     var node = this;
-    var client = null;
+    
+    // Retrieve the shared ChirpStack Server configuration node.
+    var srv = RED.nodes.getNode(config.serverConfig);
+    if (!srv) {
+      node.error("No ChirpStack Server config node selected.", config);
+      return;
+    }
+    var server = srv.server;
+    var apiToken = srv.apiToken;
+    var useTls = srv.useTls;
 
-    if (config.useTls) {
-      client = new multicastGroup.MulticastGroupServiceClient(config.server, grpc.credentials.createSsl());
+    // Create the client using the shared settings.
+    var client = null;
+    if (useTls) {
+      client = new multicastGroup.MulticastGroupServiceClient(server, grpc.credentials.createSsl());
     } else {
-      client = new multicastGroup.MulticastGroupServiceClient(config.server, grpc.credentials.createInsecure());
+      client = new multicastGroup.MulticastGroupServiceClient(server, grpc.credentials.createInsecure());
     }
 
-
+    // Create metadata with the API token.
     var meta = new grpc.Metadata();
-    meta.add('authorization', 'Bearer ' + config.apiToken);
-
+    meta.add('authorization', 'Bearer ' + apiToken);
 
     node.on("input", function(msg) {
 
@@ -39,8 +49,10 @@ module.exports = function(RED) {
         item.setFPort(msg.fPort);
       }
 
+      // Use the node's encoding setting (or default to "hex")
+      var encoding = config.encoding || "hex";
       if (msg.payload !== undefined) {
-        item.setData(Buffer.from(msg.payload, config.encoding).toString("base64"));
+        item.setData(Buffer.from(msg.payload, encoding).toString("base64"));
       } else {
         node.log("payload is undefined, assuming empty downlink frame");
       }
@@ -48,10 +60,9 @@ module.exports = function(RED) {
       req.setQueueItem(item);
       client.enqueue(req, meta, function(err, resp) {
         if (err !== null) {
-          node.error("Enqueue error: ", err);
+          node.error("Enqueue error: " + err, msg);
         } else {
           node.log("Downlink enqueued");
-
           node.send({
             fCnt: resp.getFCnt()
           });

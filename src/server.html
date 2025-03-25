@@ -1,0 +1,80 @@
+<script type="text/javascript">
+    // Simple Caesar cipher "encryption" functions
+    function caesarEncrypt(str, shift) {
+        var result = "";
+        for (var i = 0; i < str.length; i++) {
+            // Shift the char code by the given shift value.
+            result += String.fromCharCode(str.charCodeAt(i) + shift);
+        }
+        return btoa(result); // base64 encode for safe storage as text
+    }
+
+    function caesarDecrypt(encrypted, shift) {
+        try {
+            var decoded = atob(encrypted);
+        } catch(e) {
+            return "";
+        }
+        var result = "";
+        for (var i = 0; i < decoded.length; i++) {
+            result += String.fromCharCode(decoded.charCodeAt(i) - shift);
+        }
+        return result;
+    }
+
+    // Register the config node
+    RED.nodes.registerType('chirpstack-server',{
+        category: 'config',
+        defaults: {
+            name: { value:"", required:true },
+            server: { value:"", required:true },
+            useTls: { value:false, required:true },
+            apiToken: { type:"password", required:true  }
+        },
+        label: function() {
+            return this.name || this.server || "chirpstack-server";
+        },
+        oneditprepare: function() {
+            $("#node-input-name").val(this.name);
+            $("#node-input-server").val(this.server);
+            $("#node-input-useTls").prop("checked", this.useTls);
+            // Derive a shift value from the node's unique id.
+            var shift = (this.id && this.id.length > 0) ? this.id.charCodeAt(0) % 26 : 3;
+            if (this.apiToken) {
+                var decrypted = caesarDecrypt(this.apiToken, shift);
+                $("#node-input-apiToken").val(decrypted);
+            }
+        },
+        oneditsave: function() {
+            this.name = $("#node-input-name").val();
+            this.server = $("#node-input-server").val();
+            this.useTls = $("#node-input-useTls").prop("checked");
+            var shift = (this.id && this.id.length > 0) ? this.id.charCodeAt(0) % 26 : 3;
+            var token = $("#node-input-apiToken").val();
+            this.apiToken = caesarEncrypt(token, shift);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="chirpstack-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Enter a unique name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-globe"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="hostname:port">
+    </div>
+    <div class="form-row">
+        <label for="node-input-useTls"><i class="fa fa-lock"></i> Use TLS</label>
+        <input type="checkbox" id="node-input-useTls">
+    </div>
+    <div class="form-row">
+        <label for="node-input-apiToken"><i class="fa fa-key"></i> API Token</label>
+        <input type="password" id="node-input-apiToken">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="chirpstack-server">
+    <p>This config node stores the ChirpStack server URL, TLS setting, and API token. The API token is encrypted using a simple Caesar cipher with a shift derived from the node's unique id. (This encryption is very weak and for obfuscation purposes only.)</p>
+</script>

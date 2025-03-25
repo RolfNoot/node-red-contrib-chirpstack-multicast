@@ -3,11 +3,9 @@
         category: 'ChirpStack',
         color: '#a6bbcf',
         defaults: {
-            name: {value:""},
-            server: {value: ""},
-            useTls: {value: false},
-            apiToken: {value: ""},
-            encoding: {value: "hex"}
+            name: { value:"" },
+            serverConfig: { type:"chirpstack-server", required:true },
+            encoding: { value:"hex" }
         },
         inputs:1,
         outputs:1,
@@ -20,16 +18,8 @@
 
 <script type="text/html" data-template-name="multicast group downlink">
     <div class="form-row">
-        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
-        <input type="text" id="node-input-server" placeholder="hostname:port, e.g. localhost:8080 or example.com:443">
-    </div>
-    <div class="form-row">
-        <label for="node-input-useTls"><i class="fa fa-lock"></i> Use TLS</label>
-        <input type="checkbox" id="node-input-useTls">
-    </div>
-    <div class="form-row">
-        <label for="node-input-apiToken"><i class="fa fa-key"></i> API Token</label>
-        <input type="password" id="node-input-apiToken" placeholder="API Token">
+        <label for="node-input-serverConfig"><i class="fa fa-globe"></i> Server</label>
+        <input type="text" id="node-input-serverConfig" placeholder="Select a ChirpStack Server"/>
     </div>
     <div class="form-row">
         <label for="node-input-encoding"><i class="fa fa-file-code-o"></i> Payload Encoding</label>
@@ -63,12 +53,12 @@
       <dt>fPort <span class="property-type">number</span></dt>
       <dd>Downlink FPort.</dd>
       <dt>payload <span class="property-type">string</span></dt>
-      <dd>HEX or BASE64 encoded payload (select the encoding in the node settings). If <code>payload</code> is <code>undefined</code>, then an empty downlink will be enqueued.</dd>
+      <dd>Payload encoded in HEX or BASE64. The encoding is determined by this node's settings.</dd>
     </dl>
 
     <h3>Output</h3>
     <dl class="message-properties">
       <dt>fCnt <span class="property-type">string</span></dt>
-      <dd>Frame counter.</dd>
+      <dd>Frame counter returned by the ChirpStack API.</dd>
     </dl>
 </script>

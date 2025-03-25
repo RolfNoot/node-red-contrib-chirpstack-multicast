@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    RED.nodes.registerType('list-items',{
+        category: 'ChirpStack',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            serverConfig: { type: "chirpstack-server", required: true },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "bridge.svg",
+        label: function() {
+            return this.name || "list-items";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="list-items">
+    <div class="form-row">
+        <label for="node-input-serverConfig"><i class="fa fa-globe"></i> Server</label>
+        <input type="text" id="node-input-serverConfig" placeholder="Select a ChirpStack Server"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="list-items">
+    <p>This node queries the ChirpStack gRPC API based on the input topic using the selected server configuration from the config node.</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+      <dt>topic <span class="property-type">string</span></dt>
+      <dd>Either <code>listApplications</code>, <code>listMulticastGroups</code>, or <code>listTenants</code>.</dd>
+      <dt>tenantId <span class="property-type">string</span></dt>
+      <dd>Required when topic is <code>listApplications</code>.</dd>
+      <dt>applicationId <span class="property-type">string</span></dt>
+      <dd>Required when topic is <code>listMulticastGroups</code>.</dd>
+    </dl>
+    <h3>Output</h3>
+    <dl class="message-properties">
+      <dt>msg.Applications <span class="property-type">Array</span></dt>
+      <dd>An array of applications (with id and name) when topic is <code>listApplications</code>.</dd>
+      <dt>msg.MulticastGroups <span class="property-type">Array</span></dt>
+      <dd>An array of multicast groups (with id and name) when topic is <code>listMulticastGroups</code>.</dd>
+      <dt>msg.Tenants <span class="property-type">Array</span></dt>
+      <dd>An array of tenants (with id and name) when topic is <code>listTenants</code>.</dd>
+      <dt>msg.topic <span class="property-type">string</span></dt>
+      <dd>The original topic is forwarded.</dd>
+    </dl>
+</script>
