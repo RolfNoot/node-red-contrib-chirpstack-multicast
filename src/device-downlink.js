@@ -19,9 +19,6 @@ module.exports = function(RED) {
     var server = srv.server;
     var apiToken = srv.apiToken;
     var useTls = srv.useTls;
-    // Use encoding from the server config node if available,
-    // fallback to a default (e.g., "utf8") if not provided.
-    var encoding = srv.encoding || "utf8";
 
     // Create the DeviceServiceClient based on the TLS setting.
     var client = null;
@@ -62,7 +59,7 @@ module.exports = function(RED) {
 
       if (msg.payload !== undefined) {
         // Convert the payload to base64 using the encoding from the server settings.
-        item.setData(Buffer.from(msg.payload, encoding).toString("base64"));
+        item.setData(Buffer.from(msg.payload, config.encoding).toString("base64"));
       } else {
         node.log("payload is undefined, assuming empty downlink frame");
       }
