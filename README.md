@@ -13,7 +13,7 @@ documentation for information on installing third-party nodes to Node-RED.
 Example command:
 
 ```bash
-npm install @chirpstack/node-red-contrib-chirpstack
+npm install git+https://github.com/RolfNoot/node-red-contrib-chirpstack-multicast.git
 ```
 
 ## Usage example
