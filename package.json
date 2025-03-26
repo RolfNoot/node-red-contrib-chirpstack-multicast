@@ -1,17 +1,20 @@
 {
- "name": "@chirpstack/node-red-contrib-chirpstack",
- "description": "ChirpStack Node-RED nodes",
- "version": "4.1.1",
- "license": "MIT",
- "dependencies": {
-  "@chirpstack/chirpstack-api": "^4.1.1",
-  "@grpc/grpc-js": "^1.8.0"
- },
- "node-red": {
-  "nodes": {
-   "device-event": "src/device-event.js",
-   "device-downlink": "src/device-downlink.js",
-   "multicast-downlink": "src/multicastGroup-downlink.js"
-  }
- }
+    "name": "@chirpstack/node-red-contrib-chirpstack",
+    "description": "ChirpStack Node-RED nodes",
+    "version": "4.1.1",
+    "license": "MIT",
+    "dependencies": {
+      "@chirpstack/chirpstack-api": "^4.1.1",
+      "@grpc/grpc-js": "^1.8.0"
+    },
+    "node-red": {
+      "nodes": {
+        "device-event": "src/device-event.js",
+        "device-downlink": "src/device-downlink.js",
+        "multicast-downlink": "src/multicastGroup-downlink.js",
+        "list-items": "src/list-items.js",
+        "chirpstack-server": "src/server.js"
+      }
+    }
 }
+  
